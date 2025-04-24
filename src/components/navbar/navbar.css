@@ -1,0 +1,155 @@
+/* Navbar styling based on "Calm Motivation" theme */
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.logo-link {
+  text-decoration: none;
+}
+
+.navbar-container h1 {
+  color: var(--primary);
+  font-weight: 600;
+  margin: 0;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 300px;
+}
+
+.search-form input {
+  padding: 0.6rem 1rem;
+  padding-right: 2.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  background-color: var(--card-bg);
+  width: 100%;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.search-form input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px rgba(138, 182, 249, 0.2);
+  width: 100%;
+}
+
+.search-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #777;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-btn:hover {
+  color: var(--primary);
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navbar-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+  font-size: 0.95rem;
+}
+
+.navbar-links a:hover {
+  color: var(--primary);
+}
+
+.auth-link, 
+.navbar-links a[href="/create-post"] {
+  background-color: var(--primary);
+  color: white !important;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.auth-link:hover,
+.navbar-links a[href="/create-post"]:hover {
+  background-color: var(--primary-dark);
+  color: white !important;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.username-display {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.logout-btn {
+  background-color: transparent;
+  color: #e74c3c;
+  border: 1px solid #e74c3c;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover {
+  background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar-container {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .search-form {
+    order: 3;
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .navbar-links {
+    margin-left: auto;
+    flex-wrap: wrap;
+  }
+
+  .user-menu {
+    margin-top: 0.5rem;
+    width: 100%;
+    justify-content: space-between;
+  }
+}

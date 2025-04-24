@@ -1,0 +1,91 @@
+:root {
+  /* Main Theme Colors */
+  --primary: #7BC47F;        /* Fresh leafy green */
+  --primary-dark: #6ab36e;   /* Darker version for hover states */
+  --secondary: #8AB6F9;      /* Soft blue */
+  --background: #F9FAFB;     /* Super light gray */
+  --card-bg: #FFFFFF;        /* Simple white */
+  --text: #333333;           /* Classic dark gray */
+  --win-glow: #FFD972;       /* Soft yellow */
+  
+  /* Bonus Accent Colors */
+  --pink-highlight: #F6C5C5; /* Pinkish highlight */
+  --lavender: #D6C6F7;       /* Lavender */
+  --mint: #D3F3EE;           /* Mint green */
+  
+  /* Common UI Elements */
+  --border-light: rgba(123, 196, 127, 0.3);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --radius: 8px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: var(--primary);
+}
+
+button, .btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--primary-dark);
+}
+
+button.secondary, .btn-secondary {
+  background-color: var(--secondary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+input, textarea, select {
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--radius);
+  background-color: white;
+  width: 100%;
+  font-size: 1rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 2px rgba(138, 182, 249, 0.2);
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
