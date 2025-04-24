@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import Alert from '@mui/material/Alert';
+import Snackbar from '@mui/material/Snackbar';
 import './PostDetail.css';
 
 const PostDetail = () => {
+    const { isAuthenticated } = useAuth();
     const { id } = useParams();
-    const navigate = useNavigate();
+    const navigate = useNavigate(); 
     const [post, setPost] = useState(null);
     const [comment, setComment] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
-    const [editFormData, setEditFormData] = useState({
-        title: '',
-        content: '',
-        imageUrl: '',
-        category: ''
-    });
+   
+    const [alert, setAlert] = useState(false);
 
     // In a real app, this would be fetched from an API
     useEffect(() => {
@@ -62,14 +61,14 @@ const PostDetail = () => {
         const foundPost = mockPosts.find(p => p.id === parseInt(id));
         setPost(foundPost);
         
-        if (foundPost) {
-            setEditFormData({
-                title: foundPost.title,
-                content: foundPost.content,
-                imageUrl: foundPost.imageUrl,
-                category: foundPost.category
-            });
-        }
+        // if (foundPost) {
+        //     setEditFormData({
+        //         title: foundPost.title,
+        //         content: foundPost.content,
+        //         imageUrl: foundPost.imageUrl,
+        //         category: foundPost.category
+        //     });
+        // }
     }, [id]);
 
     if (!post) {
@@ -96,6 +95,13 @@ const PostDetail = () => {
     };
 
     const handleUpvote = () => {
+        console.log('isAuthenticated', isAuthenticated);
+        console.log('in handleUpvote');
+        if (!isAuthenticated) {
+            setAlert(true);
+            return;
+        }
+
         setPost(prev => ({
             ...prev,
             upvotes: prev.upvotes + 1
@@ -105,6 +111,11 @@ const PostDetail = () => {
     const handleAddComment = (e) => {
         e.preventDefault();
         if (!comment.trim()) return;
+
+        if (!isAuthenticated) {
+            setAlert(true);
+            return;
+        }
 
         const newComment = {
             id: post.comments.length + 1,
@@ -121,113 +132,15 @@ const PostDetail = () => {
         setComment('');
     };
 
-    const handleEditChange = (e) => {
-        const { name, value } = e.target;
-        setEditFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
-    const handleEditSubmit = (e) => {
-        e.preventDefault();
-        setPost(prev => ({
-            ...prev,
-            title: editFormData.title,
-            content: editFormData.content,
-            imageUrl: editFormData.imageUrl,
-            category: editFormData.category
-        }));
-        setIsEditing(false);
-    };
-
-    const handleDelete = () => {
-        // In a real app, this would send a delete request to an API
-        if (window.confirm("Are you sure you want to delete this post?")) {
-            // Redirect to home after deletion
-            navigate('/');
-        }
-    };
-
     return (
         <div className="post-detail-container">
-            {isEditing ? (
-                <div className="card edit-post-form">
-                    <h2>Edit Your Win</h2>
-                    <form onSubmit={handleEditSubmit}>
-                        <div className="form-group">
-                            <label htmlFor="title">Title</label>
-                            <input
-                                type="text"
-                                id="title"
-                                name="title"
-                                value={editFormData.title}
-                                onChange={handleEditChange}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="content">Description</label>
-                            <textarea
-                                id="content"
-                                name="content"
-                                value={editFormData.content}
-                                onChange={handleEditChange}
-                                rows={4}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="imageUrl">Image URL (optional)</label>
-                            <input
-                                type="url"
-                                id="imageUrl"
-                                name="imageUrl"
-                                value={editFormData.imageUrl}
-                                onChange={handleEditChange}
-                                placeholder="https://example.com/image.jpg"
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="category">Category</label>
-                            <select
-                                id="category"
-                                name="category"
-                                value={editFormData.category}
-                                onChange={handleEditChange}
-                            >
-                                <option value="general">General</option>
-                                <option value="fitness">Fitness</option>
-                                <option value="learning">Learning</option>
-                                <option value="mental-health">Mental Health</option>
-                                <option value="work">Work</option>
-                                <option value="personal">Personal</option>
-                            </select>
-                        </div>
-                        <div className="form-actions">
-                            <button type="button" className="btn-secondary" onClick={() => setIsEditing(false)}>
-                                Cancel
-                            </button>
-                            <button type="submit" className="btn-primary">
-                                Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            ) : (
+           
                 <div className="post-content-container">
                     <div className="post-header-actions">
                         <button className="btn-back" onClick={() => navigate('/')}>
                             ← Back to Feed
                         </button>
-                        <div className="post-actions-right">
-                            <button className="btn-edit" onClick={() => setIsEditing(true)}>
-                                Edit
-                            </button>
-                            <button className="btn-delete" onClick={handleDelete}>
-                                Delete
-                            </button>
-                        </div>
+                       
                     </div>
 
                     <div className="card post-detail-card">
@@ -253,16 +166,24 @@ const PostDetail = () => {
                         )}
                         
                         <div className="post-engagement">
-                            <button className="button-upvote" onClick={handleUpvote}>
+                            <button className="button-upvote" onClick={handleUpvote} >
                                 <span>👏</span> {post.upvotes} Upvotes
                             </button>
+
+                            {alert && (
+                                <Snackbar open={alert} autoHideDuration={3000} onClose={() => setAlert(false)}>
+                                    <Alert severity="error">
+                                        Please log in to upvote
+                                    </Alert>
+                                </Snackbar>
+                            )}
                         </div>
                     </div>
 
                     <div className="card comments-section">
                         <h3>Comments ({post.comments.length})</h3>
                         
-                        <form className="comment-form" onSubmit={handleAddComment}>
+                       {isAuthenticated && <form className="comment-form" onSubmit={handleAddComment}>
                             <textarea
                                 placeholder="Add a comment..."
                                 value={comment}
@@ -271,7 +192,7 @@ const PostDetail = () => {
                                 required
                             />
                             <button type="submit" className="btn-primary">Post Comment</button>
-                        </form>
+                        </form>}
                         
                         <div className="comments-list">
                             {post.comments.length > 0 ? (
@@ -292,7 +213,7 @@ const PostDetail = () => {
                         </div>
                     </div>
                 </div>
-            )}
+            
         </div>
     );
 };
