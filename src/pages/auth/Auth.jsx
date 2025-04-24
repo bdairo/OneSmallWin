@@ -30,6 +30,7 @@ const Auth = () => {
     };
 
     const handleSubmit = async (e) => {
+        console.log('in handleSubmit');
         e.preventDefault();
         setError('');
         setIsLoading(true);
@@ -45,14 +46,14 @@ const Auth = () => {
                     setError(error || 'Failed to login');
                 }
             } else {
-                // Register logic
+                console.log('in register');
                 if (formData.password !== formData.confirmPassword) {
                     throw new Error('Passwords do not match');
                 }
 
-                if (formData.password.length < 6) {
-                    throw new Error('Password must be at least 6 characters');
-                }
+                // if (formData.password.length < 6) {
+                //     throw new Error('Password must be at least 6 characters');
+                // }
 
                 const { success, error } = await register(
                     formData.username, 

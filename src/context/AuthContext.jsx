@@ -1,21 +1,34 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import supabase from '../client';
 
-// Create the auth context
 const AuthContext = createContext(null);
 
-// Custom hook to use the auth context
+
 export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-// Provider component to wrap the app and provide auth state
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    // Load user from localStorage on startup
+    useEffect(() => {
+        const {data: {subscription}} = supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT') {
+                setCurrentUser(null);
+            } else if (event === 'SIGNED_IN') {
+                setCurrentUser(session?.user || null);
+            }
+            setLoading(false);
+        });
+
+        return () => {  
+            subscription.unsubscribe();
+        };
+    }, []);
+    
     useEffect(() => {
         const checkLoggedIn = async () => {
             const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
@@ -40,17 +53,15 @@ export const AuthProvider = ({ children }) => {
         // In a real app, this would call Supabase auth.signIn
         try {
             // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 500));
+            const {error} = await supabase.auth.signInWithPassword({
+                email,
+                password
+            });
             
-            // This is where you'd validate credentials with Supabase
-            if (!email || !password) {
-                throw new Error('Please fill in all fields');
+            if (error) {
+                throw error;
             }
-            
-            // Simulate successful login
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', email.split('@')[0]);
-            
+                   
             setCurrentUser({
                 username: email.split('@')[0],
                 email
@@ -67,19 +78,19 @@ export const AuthProvider = ({ children }) => {
     
     // Register function
     const register = async (username, email, password) => {
-        // In a real app, this would call Supabase auth.signUp
         try {
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            // This is where you'd create a user with Supabase
-            if (!username || !email || !password) {
-                throw new Error('Please fill in all fields');
+            console.log('registering user...');
+            const {error} = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {username}
+                }
+            });
+
+            if (error) {
+                throw error;
             }
-            
-            // Simulate successful registration
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('username', username);
             
             setCurrentUser({
                 username,
@@ -96,10 +107,12 @@ export const AuthProvider = ({ children }) => {
     };
     
     // Logout function
-    const logout = () => {
-        // In a real app, this would call Supabase auth.signOut
-        localStorage.removeItem('isLoggedIn');
-        localStorage.removeItem('username');
+    const logout = async () => {
+        
+        const {error} = await supabase.auth.signOut();
+        if (error) {
+            throw error;
+        }
         setCurrentUser(null);
         navigate('/');
     };

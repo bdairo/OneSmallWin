@@ -95,8 +95,6 @@ const PostDetail = () => {
     };
 
     const handleUpvote = () => {
-        console.log('isAuthenticated', isAuthenticated);
-        console.log('in handleUpvote');
         if (!isAuthenticated) {
             setAlert(true);
             return;
