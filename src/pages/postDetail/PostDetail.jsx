@@ -8,43 +8,67 @@ import supabase from "../../client";
 
 
 const PostDetail = () => {
-  const { isAuthenticated, userId, currentUser } = useAuth();
+  const { isAuthenticated, currentUser } = useAuth();
+  const {userId} = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
-  const [comments, setComments] = useState([]);
+  const [comments, setComments] = useState([]); 
+  const [upvoteCount, setUpvoteCount] = useState(0);
   const [comment, setComment] = useState("");
   const [alert, setAlert] = useState(false);
 
   useEffect(() => {
-
-
-    const getPost = async () => {
-      const { data: post, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("post_id", id)
-        .single();
-      if (error) {
-        throw error;
+    const fetchPostData = async () => {
+      try {
+        // Fetch post details
+        const { data: post, error } = await supabase
+          .from("posts")
+          .select("*, users:user_id(username)")
+          .eq("post_id", id)
+          .single();
+        
+        if (error) {
+          console.error("Error fetching post:", error);
+          return;
+        }
+        
+        setPost(post);
+        
+        // Fetch comments
+        const { data: comments, error: commentsError } = await supabase
+          .from("comments")
+          .select("*, users:user_id(username)")
+          .eq("post_id", id)
+          .order('created_at', { ascending: false });
+        
+        if (commentsError) {
+          console.error("Error fetching comments:", commentsError);
+          setComments([]);
+        } else {
+          setComments(comments || []);
+        }
+        
+        // Fetch upvotes
+        const { data: upvotes, error: upvotesError } = await supabase
+          .from("upvotes")
+          .select("*")
+          .eq("post_id", id);
+        
+        if (upvotesError) {
+          console.error("Error fetching upvotes:", upvotesError);
+          setUpvoteCount(0);
+        } else {
+          setUpvoteCount(upvotes?.length || 0);
+        }
+        
+      } catch (error) {
+        console.error("Error in fetchPostData:", error);
       }
-      setPost(post);
     };
 
-    const getComments = async () => {
-      const { data: comments, error: commentsError } = await supabase
-        .from("comments")
-        .select("*")
-        .eq("post_id", id);
-      if (commentsError) {
-        throw commentsError;
-      }
-      setComments(comments);
-    };
-
-    getPost();
-    getComments();
-  }, [id]);
+    fetchPostData();
+  }, [id]); // Only id should be a dependency - don't include upvoteCount
 
   if (!post) {
     return <div className="post-detail-loading">Loading post...</div>;
@@ -68,16 +92,40 @@ const PostDetail = () => {
     return `${days} day${days !== 1 ? "s" : ""} ago`;
   };
 
-  const handleUpvote = () => {
+  const handleAddUpvote = async () => {
+    console.log('in handleAddUpvote')
     if (!isAuthenticated) {
       setAlert(true);
       return;
     }
+     
+    const { data: hasUpvoted, error: hasUpvotedError } = await supabase
+        .from("upvotes")
+        .select("*")
+        .eq("post_id", id)
+        .eq("user_id", userId);
+      if (hasUpvotedError){
+        throw hasUpvotedError;
+      }
 
-    setPost((prev) => ({
-      ...prev,
-      upvotes: prev.upvotes + 1,
-    }));
+      console.log("hasUpvoted", hasUpvoted);
+      if (hasUpvoted.length > 0){
+        setAlert(true);
+        return;
+      }
+    
+    const { error } = await supabase
+      .from("upvotes")
+      .insert({
+        user_id: userId,
+        post_id: id,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    setUpvoteCount(upvoteCount + 1);
   };
 
   const handleAddComment = async (e) => {
@@ -157,8 +205,8 @@ const PostDetail = () => {
           )}
 
           <div className="post-engagement">
-            <button className="button-upvote" onClick={handleUpvote}>
-              <span>👏</span> {post.upvotes} Upvotes
+            <button className="button-upvote" onClick={handleAddUpvote}>
+              <span>👏</span> {upvoteCount} Upvotes
             </button>
 
             {alert && (
@@ -167,7 +215,7 @@ const PostDetail = () => {
                 autoHideDuration={3000}
                 onClose={() => setAlert(false)}
               >
-                <Alert severity="error">Please log in to upvote</Alert>
+                {isAuthenticated ? <Alert severity="error">You have already upvoted this post</Alert> : <Alert severity="error">Please log in to upvote</Alert>}
               </Snackbar>
             )}
           </div>
