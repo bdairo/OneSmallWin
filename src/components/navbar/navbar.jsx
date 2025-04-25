@@ -7,7 +7,7 @@ import './navbar.css';
 const Navbar = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-    const { currentUser, logout, isAuthenticated } = useAuth();
+    const {currentUser, logout, isAuthenticated } = useAuth();
 
     const handleSearch = (e) => {
         e.preventDefault();

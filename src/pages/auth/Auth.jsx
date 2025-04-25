@@ -30,7 +30,6 @@ const Auth = () => {
     };
 
     const handleSubmit = async (e) => {
-        console.log('in handleSubmit');
         e.preventDefault();
         setError('');
         setIsLoading(true);

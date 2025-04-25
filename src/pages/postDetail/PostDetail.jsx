@@ -93,7 +93,6 @@ const PostDetail = () => {
   };
 
   const handleAddUpvote = async () => {
-    console.log('in handleAddUpvote')
     if (!isAuthenticated) {
       setAlert(true);
       return;
@@ -107,8 +106,7 @@ const PostDetail = () => {
       if (hasUpvotedError){
         throw hasUpvotedError;
       }
-
-      console.log("hasUpvoted", hasUpvoted);
+      
       if (hasUpvoted.length > 0){
         setAlert(true);
         return;
