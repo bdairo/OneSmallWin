@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CreatePost.css';
+import CATEGORIES from '../../contants';
+import supabase from '../../client';
+import { useAuth } from '../../context/AuthContext';
 
 const CreatePost = () => {
+    const {userId} = useAuth();
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         title: '',
         content: '',
         imageUrl: '',
-        category: 'general'
+        category: CATEGORIES[0]
     });
 
     const handleChange = (e) => {
@@ -19,12 +23,30 @@ const CreatePost = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // In a real app, this would send data to an API
-        console.log('Submitted win:', formData);
-        // Redirect to home after submission
-        navigate('/');
+        
+        try{
+
+            const data = {
+                user_id: userId,
+                title: formData.title,
+                content: formData.content,
+                image_url: formData.imageUrl,
+                category: formData.category
+            }
+            console.log('data', data);
+
+            await supabase.from('posts').insert(data);
+            console.log('Submitted win:', data);
+            
+            navigate('/');
+
+        } catch (error) {
+            console.error('Error submitting win:', error);
+        }
+       
+       
     };
 
     return (
@@ -83,12 +105,9 @@ const CreatePost = () => {
                             value={formData.category}
                             onChange={handleChange}
                         >
-                            <option value="general">General</option>
-                            <option value="fitness">Fitness</option>
-                            <option value="learning">Learning</option>
-                            <option value="mental-health">Mental Health</option>
-                            <option value="work">Work</option>
-                            <option value="personal">Personal</option>
+                        {Object.values(CATEGORIES).map((category, index) => (
+                            <option key={index} value={category}>{category}</option>
+                        ))}
                         </select>
                     </div>
                 

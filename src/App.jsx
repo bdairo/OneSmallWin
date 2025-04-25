@@ -1,6 +1,7 @@
 import {Route, Routes } from 'react-router-dom'
 import Home from './pages/home/Home'
 import CreatePost from './pages/createPost/CreatePost'
+import EditPost from './pages/editPost/EditPost'
 import PostDetail from './pages/postDetail/PostDetail'
 import MyWins from './pages/myWins/MyWins'
 import Auth from './pages/auth/Auth'
@@ -33,6 +34,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CreatePost />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path='/edit-post/:id' 
+                element={
+                  <ProtectedRoute>
+                    <EditPost />
                   </ProtectedRoute>
                 } 
               />

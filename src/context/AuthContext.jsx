@@ -10,24 +10,25 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
+    const [userId, setUserId] = useState(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const {data: {subscription}} = supabase.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') {
-                setCurrentUser(null);
-            } else if (event === 'SIGNED_IN') {
-                setCurrentUser(session?.user || null);
-            }
-            setLoading(false);
-        });
+    // useEffect(() => {
+    //     const {data: {subscription}} = supabase.auth.onAuthStateChange((event, session) => {
+    //         if (event === 'SIGNED_OUT') {
+    //             setCurrentUser(null);
+    //         } else if (event === 'SIGNED_IN') {
+    //             setCurrentUser(session?.user || null);
+    //         }
+    //         setLoading(false);
+    //     });
 
-        return () => {  
-            subscription.unsubscribe();
-        };
-    }, []);
+    //     return () => {  
+    //         subscription.unsubscribe();
+    //     };
+    // }, []);
     
     useEffect(() => {
         const checkLoggedIn = async () => {
@@ -50,10 +51,8 @@ export const AuthProvider = ({ children }) => {
 
     // Login function
     const login = async (email, password) => {
-        // In a real app, this would call Supabase auth.signIn
         try {
-            // Simulate API call delay
-            const {error} = await supabase.auth.signInWithPassword({
+            const {error, data} = await supabase.auth.signInWithPassword({
                 email,
                 password
             });
@@ -66,7 +65,8 @@ export const AuthProvider = ({ children }) => {
                 username: email.split('@')[0],
                 email
             });
-            
+
+            setUserId(data.user.id);
             return { success: true };
         } catch (error) {
             return {
@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
     const register = async (username, email, password) => {
         try {
             console.log('registering user...');
-            const {error} = await supabase.auth.signUp({
+            const {data, error} = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
@@ -96,6 +96,8 @@ export const AuthProvider = ({ children }) => {
                 username,
                 email
             });
+
+            setUserId(data.user.id);
             
             return { success: true };
         } catch (error) {
@@ -114,6 +116,7 @@ export const AuthProvider = ({ children }) => {
             throw error;
         }
         setCurrentUser(null);
+        setUserId(null);
         navigate('/');
     };
 
@@ -122,6 +125,7 @@ export const AuthProvider = ({ children }) => {
         login,
         register,
         logout,
+        userId,
         isAuthenticated: !!currentUser
     };
 

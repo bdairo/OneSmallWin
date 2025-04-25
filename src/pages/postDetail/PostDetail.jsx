@@ -18,6 +18,7 @@ const PostDetail = () => {
 
   useEffect(() => {
 
+
     const getPost = async () => {
       const { data: post, error } = await supabase
         .from("posts")
@@ -50,11 +51,8 @@ const PostDetail = () => {
   }
 
   const formatDate = (date) => {
-    console.log('date', date);
     const now = new Date();
-    console.log('now', now);
     const diff = now - new Date(date);
-    console.log('diff', diff);
     const minutes = Math.floor(diff / 60000);
 
     if (minutes < 60) {
