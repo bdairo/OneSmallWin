@@ -60,9 +60,9 @@ export const AuthProvider = ({ children }) => {
             if (error) {
                 throw error;
             }
-                   
+                
             setCurrentUser({
-                username: email.split('@')[0],
+                username: data.user.user_metadata.username,
                 email
             });
 

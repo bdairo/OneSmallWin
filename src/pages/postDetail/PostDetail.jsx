@@ -68,7 +68,7 @@ const PostDetail = () => {
     };
 
     fetchPostData();
-  }, [id]); // Only id should be a dependency - don't include upvoteCount
+  }, [id]); 
 
   if (!post) {
     return <div className="post-detail-loading">Loading post...</div>;
@@ -80,6 +80,9 @@ const PostDetail = () => {
     const minutes = Math.floor(diff / 60000);
 
     if (minutes < 60) {
+      if (minutes <= 0) {
+        return "just now";
+      }
       return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
     }
 
@@ -143,7 +146,7 @@ const PostDetail = () => {
       content: comment
     };
    
-    const {error} = await supabase
+    const {data, error} = await supabase
       .from("comments")
       .insert(newComment)
       .select();
@@ -152,7 +155,13 @@ const PostDetail = () => {
       throw error;
     }
 
-    setComments((prev) => [...prev, newComment]);
+    console.log("received data", data);
+    setComments((prev) => [...prev, {
+      id: data[0].id,
+      username: data[0].username,
+      content: data[0].content,
+      created_at: data[0].created_at
+    }]);
 
     setComment("");
     } catch (error) {
@@ -239,7 +248,7 @@ const PostDetail = () => {
 
           <div className="comments-list">
             {comments.length > 0 ? (
-              comments.map((comment) => (
+              comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((comment) => (
                 <div className="comment" key={comment.id}>
                   <div className="comment-header">
                     <span className="comment-username">{comment.username}</span>
