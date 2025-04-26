@@ -1,5 +1,6 @@
-🌱 One Small Win
-One Small Win is a lightweight, feel-good forum app where users can share their daily micro-achievements — no matter how small. Whether it's drinking more water, cleaning your desk, or finally sending that email, this app is about building momentum and celebrating progress over perfection.
+ [Website](onesmallwin.vercel.app)
+
+🌱One Small Win is a lightweight, feel-good forum app where users can share their daily micro-achievements — no matter how small. Whether it's drinking more water, cleaning your desk, or finally sending that email, this app is about building momentum and celebrating progress over perfection.
 
 Users can:
 
