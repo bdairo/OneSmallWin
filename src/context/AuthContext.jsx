@@ -79,18 +79,22 @@ export const AuthProvider = ({ children }) => {
     // Register function
     const register = async (username, email, password) => {
         try {
-            console.log('registering user...');
             const {data, error} = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
-                    data: {username}
+                    data: {
+                        username: username
+                    }
                 }
             });
 
             if (error) {
+                console.log('error', error);
                 throw error;
             }
+            
+            console.log('Registration successful', data);
             
             setCurrentUser({
                 username,
@@ -101,6 +105,7 @@ export const AuthProvider = ({ children }) => {
             
             return { success: true };
         } catch (error) {
+            console.error('Registration error:', error);
             return {
                 success: false,
                 error: error.message

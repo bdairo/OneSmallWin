@@ -24,49 +24,54 @@ const Home = () => {
         if (error) {
           throw error;
         }
-        // console.log('in getFilteredPosts');
-        // console.log("allPosts", allPosts);
-        // console.log("searchTerm", searchTerm);
+       
+        const updatedPosts = [];
+        for (const post of allPosts) {
+          const { data: upvotes, error: upvotesError } = await supabase
+            .from("upvotes")
+            .select("*")
+            .eq("post_id", post.post_id);
 
-        // Map the data to ensure it has the right structure
-        const formattedPosts = allPosts.map((post) => ({
-          id: post.post_id,
-          title: post.title,
-          content: post.content,
-          category: post.category,
-          date: new Date(post.created_at),
-          imageUrl: post.image_url,
-          // Assuming 'users' returns an object, not an array
-          username: post.users?.username || "Anonymous",
-          upvotes: 0, // You'll need to implement upvotes counting
-          comments: post.comments || [],
-        }));
-        // First filter by search term
-        let filteredPosts = formattedPosts.filter((post) => {
+          if (upvotesError) {
+            throw upvotesError;
+          }
+
+          post.upvote_count = upvotes.length ? upvotes.length : 0;
+          updatedPosts.push({
+            id: post.post_id,
+            title: post.title,
+            content: post.content,
+            category: post.category,
+            date: new Date(post.created_at),
+            image_url: post.image_url,
+            username: post.users.username,
+            upvote_count: upvotes.length ? upvotes.length : 0,
+            comments: post.comments,
+          });
+        }
+
+        console.log("updatedPosts", updatedPosts);
+        let filteredPosts = updatedPosts.filter((post) => {
           return (
             post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
             post.content.toLowerCase().includes(searchTerm.toLowerCase())
           );
         });
-
-        // console.log('searchTerm', searchTerm);
-        // console.log('filteredPosts', filteredPosts);
-        // Then filter by category if not "all"
+      
         if (activeCategory !== "All") {
           filteredPosts = filteredPosts.filter(
             (post) =>
               post.category.toLowerCase() === activeCategory.toLowerCase()
           );
         }
-
-        // Finally sort by selected criteria
+       
         let sortedPosts = [...filteredPosts];
         if (sortBy === "newest") {
-        //   console.log("sorting by newest");
           sortedPosts = sortedPosts.sort((a, b) => b.date - a.date);
         } else if (sortBy === "popular") {
-        //   console.log("sorting by popular");
-          sortedPosts = sortedPosts.sort((a, b) => b.upvotes - a.upvotes);
+          sortedPosts = sortedPosts.sort(
+            (a, b) => b.upvote_count - a.upvote_count
+          );
         }
 
         setPosts(sortedPosts);
@@ -81,7 +86,6 @@ const Home = () => {
   }, [activeCategory, sortBy, searchTerm]);
 
   useEffect(() => {
-    // console.log('location', location);
     const params = new URLSearchParams(location.search);
     const searchQuery = params.get("search");
     if (searchQuery) {
@@ -89,7 +93,6 @@ const Home = () => {
     }
   }, [location.search]);
 
-  // Format date to relative time (e.g., "2 hours ago")
   const formatDate = (date) => {
     const now = new Date();
     const diff = now - date;
@@ -108,7 +111,6 @@ const Home = () => {
     return `${days} day${days !== 1 ? "s" : ""} ago`;
   };
 
-  // Handle category change
   const handleCategoryChange = (category) => {
     setActiveCategory(category);
   };
@@ -186,9 +188,15 @@ const Home = () => {
                     {post.category}
                   </div>
                 </div>
+               
+                <div className="post-content-preview">
+                  {post.content.length > 120
+                    ? post.content.substring(0, 120) + "..."
+                    : post.content}
+                </div>
                 <div className="post-actions">
                   <div className="button-upvote">
-                    <span>👏</span> {post.upvotes}
+                    <span>👏</span> {post.upvote_count}
                   </div>
                   <div className="post-comments-count">
                     <span>💬</span> {post.comments.length}

@@ -30,8 +30,6 @@ const MyPosts = () => {
           return;
         }
 
-        console.log("original fetched posts", posts);
-
         const updatedPosts = [];
 
         for (const post of posts) {
@@ -86,8 +84,7 @@ const MyPosts = () => {
             });
           }
         }
-        
-        console.log("updated posts", updatedPosts);
+       
         setUserPosts(updatedPosts);
       } catch (error) {
         console.error("Error in fetchUserPosts:", error);
@@ -97,7 +94,7 @@ const MyPosts = () => {
     };
 
     fetchUserPosts();
-  }, [userId]); // Add userId to dependency array
+  }, [userId]);
 
   const formatDate = (date) => {
     const now = new Date();

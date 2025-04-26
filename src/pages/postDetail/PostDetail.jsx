@@ -110,23 +110,31 @@ const PostDetail = () => {
         throw hasUpvotedError;
       }
       
-      if (hasUpvoted.length > 0){
-        setAlert(true);
-        return;
+    if (hasUpvoted.length > 0){
+        const {error: removeError} = await supabase
+          .from("upvotes")
+          .delete()
+          .eq("post_id", id)
+          .eq("user_id", userId);
+        if (removeError) {
+          throw removeError;
+        }
+
+        setUpvoteCount(upvoteCount - 1);
+      } else {
+        const { error } = await supabase
+          .from("upvotes")
+          .insert({
+            user_id: userId,
+            post_id: id,
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        setUpvoteCount(upvoteCount + 1);
       }
-    
-    const { error } = await supabase
-      .from("upvotes")
-      .insert({
-        user_id: userId,
-        post_id: id,
-      });
-
-    if (error) {
-      throw error;
-    }
-
-    setUpvoteCount(upvoteCount + 1);
   };
 
   const handleAddComment = async (e) => {
@@ -154,8 +162,7 @@ const PostDetail = () => {
     if (error) {
       throw error;
     }
-
-    console.log("received data", data);
+    
     setComments((prev) => [...prev, {
       id: data[0].id,
       username: data[0].username,
