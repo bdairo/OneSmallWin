@@ -38,3 +38,9 @@
 
   - After a user creates a new post, they can go back and edit the post
   - A previously created post can be deleted from its post page
+
+
+
+  ## Here's a walkthrough of implemented features:
+
+<img src='src/assets/video.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
