@@ -50,7 +50,7 @@ const Home = () => {
           });
         }
 
-        console.log("updatedPosts", updatedPosts);
+        // console.log("updatedPosts", updatedPosts);
         let filteredPosts = updatedPosts.filter((post) => {
           return (
             post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -112,6 +112,7 @@ const Home = () => {
   };
 
   const handleCategoryChange = (category) => {
+    console.log('current category', category);
     setActiveCategory(category);
   };
 

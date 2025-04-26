@@ -1,7 +1,6 @@
 const CATEGORIES = {
-    1: 'General',
-    2: 'Fitness',
-    3: 'Learning',
-    4: 'Mental Health',
+    1: 'Fitness',
+    2: 'Learning',
+    3: 'Mental Health',
   };
 export default CATEGORIES;
