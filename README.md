@@ -1,3 +1,19 @@
+🌱 One Small Win
+One Small Win is a lightweight, feel-good forum app where users can share their daily micro-achievements — no matter how small. Whether it's drinking more water, cleaning your desk, or finally sending that email, this app is about building momentum and celebrating progress over perfection.
+
+Users can:
+
+📌 Post their wins with a title, optional content, and an image URL
+
+👏 Upvote and encourage others
+
+🔍 Sort and search posts by time or popularity
+
+💬 Leave comments and share support
+
+Built with React, Vite, and Supabase.
+
+
 ## Features Implemented
 
 - [x] Web app includes a create form that allows the user to create posts
