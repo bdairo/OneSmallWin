@@ -34,13 +34,20 @@
     - Each click increases the post's upvotes count by one
      - Users can upvote any post any number of times
 
-- [x]A post that a user previously created can be edited or deleted from its post pages
+- [x] A post that a user previously created can be edited or deleted from its post pages
 
   - After a user creates a new post, they can go back and edit the post
   - A previously created post can be deleted from its post page
+
+
+  - [x] The database is built using Postgresql in Supabase
 
 
 
   ## Here's a walkthrough of implemented features:
 
 <img src='src/assets/video.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+
+  ##  Here's a picture of the database schema
+<img src='src/assets/database-schema.png' title='Video Walkthrough' width='' alt='Video Walkthrough' />
